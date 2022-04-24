@@ -1,30 +1,32 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <!-- 3.0不需要根元素 -->
+  <p>{{ $store.state.moduleA.username }}</p>
+  <p>{{ $store.getters.newName }}</p>
+
+  <p>{{ $store.state.moduleB.username }}</p>
+  <p>{{ $store.getters['moduleB/newName'] }}</p>
+  <button @click="mutationsFn">mutationsFn</button>
+  <button @click="actionsFn">actionsFn</button>
 </template>
+<script>
+//导入useStore构造函数
+import { useStore } from 'vuex'
 
-<style lang="less">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+export default defineComponent({
+  name: 'App',
+  setup() {
+    //拿到vuex仓库实例
+    const store = useStore()
+    console.log(store.state.username)
+    console.log(store.getters.newName)
+    const mutationsFn = () => {
+      store.commit('moduleB/updateName')
+    }
+    const actionsFn = () => {
+      store.dispatch('moduleB/updateName')
     }
   }
-}
-</style>
+})
+</script>
+
+<style lang="less"></style>
