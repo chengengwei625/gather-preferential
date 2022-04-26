@@ -1,6 +1,6 @@
 <template>
   <!-- 一级路由 -->
-  <routerView />
+  <router-view></router-view>
 </template>
 <script>
 export default {

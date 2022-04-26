@@ -12,7 +12,13 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'space-before-function-paren': 0,
     'vue/multi-word-component-names': 'off',
-    'camelcase': 'off',
+    camelcase: 'off',
     'spaced-comment': 'off'
   }
+  // globals: {
+  //   defineProps: 'readonly',
+  //   defineEmits: 'readonly',
+  //   defineExpose: 'readonly',
+  //   withDefaults: 'readonly'
+  // }
 }

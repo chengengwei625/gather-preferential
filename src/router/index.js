@@ -1,14 +1,16 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-
+const Layout = () => import(/*webpackChunkName: "Layout" */ '@/views/Layout')
+const Home = () => import(/*webpackChunkName: "Home" */ '@/views/home')
+const TopCategory = () => import(/*webpackChunkName: "TopCategory" */ '@/views/category/index')
+const SubCategory = () => import(/*webpackChunkName: "SubCategory" */ '@/views/category/sub')
 const routes = [
   {
     path: '/',
-    component: () => import(/*webpackChunkName: "Layout" */ '@/views/Layout'),
+    component: Layout,
     children: [
-      {
-        path: '/',
-        component: () => import(/*webpackChunkName: "Home" */ '@/views/home')
-      }
+      { path: '', component: Home },
+      { path: 'category/:id', component: TopCategory },
+      { path: 'category/sub/:id', component: SubCategory }
     ]
   }
 ]
