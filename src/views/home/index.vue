@@ -21,7 +21,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.container {
-  .hoverShadow();
-}
+// .container {
+//   .hoverShadow();
+// }
 </style>
