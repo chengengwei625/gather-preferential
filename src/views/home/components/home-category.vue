@@ -11,8 +11,8 @@
         <!-- 二级分类骨架 -->
         <template v-else>
           <XtxSkeleton width="60px" height="18px" bg="rgba(255,255,255,0.2)" style="margin-right: 5px" />
-          <XtxSkeleton width="60px" height="18px" bg="rgba(255,255,255,0.2)"
-        /></template>
+          <XtxSkeleton width="60px" height="18px" bg="rgba(255,255,255,0.2)" />
+        </template>
       </li>
     </ul>
     <!-- 弹层 -->

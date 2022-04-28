@@ -9,17 +9,24 @@
       <HomeBanner></HomeBanner>
     </div>
   </div>
+  <!-- 新鲜好物 -->
+  <HomeNew></HomeNew>
+  <!-- 人气推荐 -->
+  <HomeHot></HomeHot>
 </template>
 
 <script>
 import HomeCategory from '@/views/home/components/home-category'
 import HomeBanner from '@/views/home/components/home-banner'
-
+import HomeNew from './components/home-new'
+import HomeHot from './components/home-hot'
 export default {
   name: 'HomePage',
   components: {
     HomeCategory,
-    HomeBanner
+    HomeBanner,
+    HomeNew,
+    HomeHot
   }
 }
 </script>
