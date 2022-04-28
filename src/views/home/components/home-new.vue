@@ -1,8 +1,9 @@
 <template>
   <div class="home-new">
-    <HomePanel title="新鲜好物" sub-title="新鲜出炉 品质靠谱">
+    <HomePanel ref="target" title="新鲜好物" sub-title="新鲜出炉 品质靠谱">
+      <!-- 右上角更多 -->
       <template #right><XtxMore path="/" /></template>
-      <!-- 面板内容 -->
+      <!-- 面板内容  -->
       <Transition name="fade">
         <ul v-if="goods.length" class="goods-list">
           <li v-for="item in goods" :key="item.id">
@@ -20,19 +21,21 @@
   </div>
 </template>
 <script>
-import { ref } from 'vue'
-import HomePanel from './home-panel'
+// import { ref } from 'vue'
 import { findNew } from '@/api/home'
+import { useLazyData } from '@/hooks'
+import HomePanel from './home-panel'
 import HomeSkeleton from '@/views/home/components/home-skeleton'
 export default {
   name: 'HomeNew',
   components: { HomePanel, HomeSkeleton },
   setup() {
-    const goods = ref([])
-    findNew().then(data => {
-      goods.value = data.result
-    })
-    return { goods }
+    // const goods = ref([])
+    // findNew().then(data => {
+    //   goods.value = data.result
+    // })
+    const { result, target } = useLazyData(findNew)
+    return { goods: result, target }
   }
 }
 </script>
