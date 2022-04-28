@@ -1,7 +1,7 @@
 <template>
-  <HomePanel ref="target" title="人气推荐" sub-title="人气爆款 不容错过">
+  <HomePanel title="人气推荐" sub-title="人气爆款 不容错过">
     <!-- 面板内容 -->
-    <Transition name="fade">
+    <Transition ref="target" name="fade">
       <ul v-if="goods.length" ref="pannel" class="goods-list">
         <li v-for="item in goods" :key="item.id">
           <RouterLink to="/">
