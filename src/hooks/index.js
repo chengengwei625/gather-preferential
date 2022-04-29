@@ -16,13 +16,16 @@ export const useLazyData = apiFn => {
     ([{ isIntersecting }], observerElement) => {
       // 在此处可根据isIntersecting来判断，然后做业务
       if (isIntersecting) {
+        console.log(1111)
         stop()
         //调用接口取数据
         apiFn().then(data => {
           result.value = data.result
         })
       }
-    }
+    },
+    //配置对像,组件出现在可视区域的比例(数值型)
+    { threshold: 0 }
   )
   return { result, target }
 }
