@@ -4,6 +4,7 @@
       <!-- 面包屑 -->
       <XtxBread>
         <XtxBreadItem to="/">首页</XtxBreadItem>
+        <!-- 动画模式mode:旧组件退出,新组件进入 -->
         <Transition name="fade-right" mode="out-in">
           <!-- 加key是给组件添加唯一标识,从而触发触发动画条件 -->
           <XtxBreadItem :key="topCategory.id">{{ topCategory.name }}</XtxBreadItem>
