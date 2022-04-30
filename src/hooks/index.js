@@ -16,7 +16,6 @@ export const useLazyData = apiFn => {
     ([{ isIntersecting }], observerElement) => {
       // 在此处可根据isIntersecting来判断，然后做业务
       if (isIntersecting) {
-        console.log(1111)
         stop()
         //调用接口取数据
         apiFn().then(data => {
