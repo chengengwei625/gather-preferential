@@ -17,7 +17,13 @@ const routes = [
 //Vue3.0 createRouter({})创建路由实例
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
+  routes,
+  //路由跳转时返回顶部区域
+  scrollBehavior() {
+    //vue2.0 x y 控制
+    //vue3.0 left top控制
+    return { legt: 0, top: 0 }
+  }
 })
 
 export default router

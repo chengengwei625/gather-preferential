@@ -2,7 +2,7 @@
   <ul class="navs">
     <li class="home"><RouterLink to="/">首页</RouterLink></li>
     <!-- 一级分类 -->
-    <li v-for="item in list" :key="item.id" @mouseenter="show(item)" @mouseleave="hide(item)">
+    <li v-for="item in list" :key="item.id" @mousemove="show(item)" @mouseleave="hide(item)">
       <RouterLink @click="hide(item)" :to="`/category/${item.id}`">{{ item.name }}</RouterLink>
       <!-- 二级分类弹出层 -->
       <div class="layer" :class="{ open: item.open }">

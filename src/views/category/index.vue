@@ -80,7 +80,9 @@ export default {
       () => route.params.id,
       //取对象里面的属性,要用函数进行监听
       newVal => {
-        newVal && findTopCategoryFn()
+        // newVal && findTopCategoryFn()
+        //防止跳转二级类目被监听为跳转一级类目,从而报错
+        if (newVal && `/category/${newVal}` === route.path) findTopCategoryFn()
       },
       { immediate: true }
     )
