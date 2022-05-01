@@ -4,13 +4,13 @@
     <div class="item">
       <div class="head">品牌：</div>
       <div class="body">
-        <a href="javascript:;" @click="filterData.brands.selectedBrand = item.id" :class="{ active: item.id === filterData.brands.selectedBrand }" v-for="item in filterData.brands" :key="item.id">{{ item.name }}</a>
+        <a href="javascript:;" @click="filterData.brands.selectedBrand = item.id" :class="{ active: filterData.brands.selectedBrand === item.id }" v-for="item in filterData.brands" :key="item.id">{{ item.name }}</a>
       </div>
     </div>
     <div class="item" v-for="item in filterData.saleProperties" :key="item.id">
       <div class="head">{{ item.name }}</div>
       <div class="body">
-        <a href="javascript:;" @click="prop.id === item.selectedProp" :class="{ active: prop.id === item.selectedProp }" v-for="prop in item.properties" :key="prop.id">{{ prop.name }}</a>
+        <a href="javascript:;" @click="item.selectedProp = prop.id" :class="{ active: item.selectedProp === prop.id }" v-for="prop in item.properties" :key="prop.id">{{ prop.name }}</a>
       </div>
     </div>
   </div>
