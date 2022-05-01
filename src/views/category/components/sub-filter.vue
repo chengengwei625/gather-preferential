@@ -1,18 +1,25 @@
 <template>
   <!-- 筛选区 -->
-  <div class="sub-filter" v-if="filterData">
+  <div class="sub-filter" v-if="filterData && !filterLoading">
     <div class="item">
       <div class="head">品牌：</div>
       <div class="body">
-        <a href="javascript:;" v-for="item in filterData.brands" :key="item.id">{{ item.name }}</a>
+        <a href="javascript:;" @click="filterData.brands.selectedBrand = item.id" :class="{ active: item.id === filterData.brands.selectedBrand }" v-for="item in filterData.brands" :key="item.id">{{ item.name }}</a>
       </div>
     </div>
     <div class="item" v-for="item in filterData.saleProperties" :key="item.id">
       <div class="head">{{ item.name }}</div>
       <div class="body">
-        <a href="javascript:;" v-for="prop in item.properties" :key="prop.id">{{ prop.name }}</a>
+        <a href="javascript:;" @click="prop.id === item.selectedProp" :class="{ active: prop.id === item.selectedProp }" v-for="prop in item.properties" :key="prop.id">{{ prop.name }}</a>
       </div>
     </div>
+  </div>
+  <div v-else class="sub-filter">
+    <XtxSkeleton class="item" width="200px" height="40px" />
+    <XtxSkeleton class="item" width="200px" height="40px" />
+    <XtxSkeleton class="item" width="600px" height="40px" />
+    <XtxSkeleton class="item" width="600px" height="40px" />
+    <XtxSkeleton class="item" width="600px" height="40px" />
   </div>
 </template>
 <script>
@@ -38,13 +45,14 @@ export default {
           newVal &&
             findSubCategoryFilter(route.params.id).then(({ result }) => {
               // 品牌全部
-              result.selectedBrand = null
+              result.brands.selectedBrand = null
               result.brands.unshift({ id: null, name: '全部' })
               // 销售属性全部
-              result.saleProperties.forEach(p => {
-                p.selectedProp = undefined
-                p.properties.unshift({ id: null, name: '全部' })
+              result.saleProperties.forEach(item => {
+                item.selectedProp = null
+                item.properties.unshift({ id: null, name: '全部' })
               })
+              console.log(result)
               filterData.value = result
               filterLoading.value = false
             })
@@ -80,6 +88,9 @@ export default {
         }
       }
     }
+  }
+  .xtx-skeleton {
+    padding: 10px 0;
   }
 }
 </style>
