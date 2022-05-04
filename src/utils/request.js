@@ -6,7 +6,7 @@ import Axios from 'axios'
 import store from '@/store'
 import router from '@/router'
 //导出基准地址,原因:如上传图片等不需要通过axios发请求但是需要用到这个基地址
-// export const baseURL = 'http://pcapi-xiaotuxian-front-dectest.itheima.net/'
+// export const baseURL = 'http://pcapi-xiaotuxian-front-devtest.itheima.net/'
 export const baseURL = 'https://apipc-xiaotuxian-front.itheima.net/'
 const instance = Axios.create({
   baseURL,
