@@ -4,13 +4,13 @@
       <!-- 面包屑 -->
       <SubBread></SubBread>
       <!-- 筛选区 -->
-      <SubFilter></SubFilter>
+      <SubFilter @filter-change="filterChange"></SubFilter>
       <!-- 复选框 -->
       <!-- <XtxCheckbox v-model="isAllChecked">全选{{ isAllChecked }}</XtxCheckbox> -->
       <!-- 商品面板 (排序+列表) -->
       <div class="goods-list">
         <!-- 排序 -->
-        <SubSort></SubSort>
+        <SubSort @sort-change="sortChange"></SubSort>
         <!-- 列表 -->
         <ul>
           <li v-for="goods in goodsList" :key="goods.id">
@@ -46,7 +46,7 @@ export default {
     const goodsList = ref([])
     // 查询参数
     let reqParams = {
-      page: 2,
+      page: 1,
       pageSize: 20
     }
     // 获取数据函数
@@ -81,8 +81,25 @@ export default {
         }
       }
     )
+    //1．更改排序组件的筛选数据,重新请求
+    const sortChange = sortParams => {
+      finished.value = false
+      //合并请求参数,保留之前参数
+      reqParams = { ...reqParams, ...sortParams }
+      reqParams.page = 1
+      goodsList.value = []
+    }
 
-    return { loading, finished, goodsList, getData }
+    // 2．更改筛选组件的筛选数据,重新请求
+    const filterChange = sortParams => {
+      // console.log(obj)
+      finished.value = false
+      //合并请求参数,保留之前参数
+      reqParams = { ...reqParams, ...sortParams }
+      reqParams.page = 1
+      goodsList.value = []
+    }
+    return { loading, finished, goodsList, getData, sortChange, filterChange }
   }
 }
 </script>

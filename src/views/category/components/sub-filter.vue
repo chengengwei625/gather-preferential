@@ -4,13 +4,13 @@
     <div class="item">
       <div class="head">品牌：</div>
       <div class="body">
-        <a href="javascript:;" @click="filterData.brands.selectedBrand = item.id" :class="{ active: filterData.brands.selectedBrand === item.id }" v-for="item in filterData.brands" :key="item.id">{{ item.name }}</a>
+        <a href="javascript:;" @click="changeBrand(item.id)" :class="{ active: filterData.selectedBrand === item.id }" v-for="item in filterData.brands" :key="item.id">{{ item.name }}</a>
       </div>
     </div>
     <div class="item" v-for="item in filterData.saleProperties" :key="item.id">
       <div class="head">{{ item.name }}</div>
       <div class="body">
-        <a href="javascript:;" @click="item.selectedProp = prop.id" :class="{ active: item.selectedProp === prop.id }" v-for="prop in item.properties" :key="prop.id">{{ prop.name }}</a>
+        <a href="javascript:;" @click="changeProp(item, prop.id)" :class="{ active: item.selectedProp === prop.id }" v-for="prop in item.properties" :key="prop.id">{{ prop.name }}</a>
       </div>
     </div>
   </div>
@@ -28,7 +28,7 @@ import { useRoute } from 'vue-router'
 import { ref, watch } from 'vue'
 export default {
   name: 'SubFilter',
-  setup() {
+  setup(props, { emit }) {
     // 1. 获取数据
     // 2. 数据中需要全部选中，需要预览将来点击激活功能。默认选中全部
     // 3. 完成渲染
@@ -44,15 +44,15 @@ export default {
           filterLoading.value = true
           newVal &&
             findSubCategoryFilter(route.params.id).then(({ result }) => {
-              // 品牌全部
-              result.brands.selectedBrand = null
+              // 品牌全部(在品牌数组对象平级增加属性记录品牌id)
+              result.selectedBrand = null
               result.brands.unshift({ id: null, name: '全部' })
               // 销售属性全部
               result.saleProperties.forEach(item => {
                 item.selectedProp = null
                 item.properties.unshift({ id: null, name: '全部' })
               })
-              console.log(result)
+              console.log(result, 111)
               filterData.value = result
               filterLoading.value = false
             })
@@ -60,7 +60,36 @@ export default {
       },
       { immediate: true }
     )
-    return { filterData, filterLoading }
+    // 获取筛选参数
+    const getFilterParams = () => {
+      // 参考数据:{brandId:'',attrs:[{groupName:'',propertyName:''},...]}
+      const obj = { brandId: null, attrs: [] }
+      // 品牌
+      obj.brandId = filterData.value.selectedBrand
+      // 销售属性
+      filterData.value.saleProperties.forEach(item => {
+        if (item.selectedProp) {
+          const prop = item.properties.find(prop => prop.id === item.selectedProp)
+          obj.attrs.push({ groupName: item.name, propertyName: prop.name })
+        }
+      })
+      //字段置空,axios判断为空不发给后台
+      if (obj.attrs.length === 0) obj.attrs = null
+      return obj
+    }
+    //1.记录当前选择的品牌
+    const changeBrand = brandId => {
+      if (filterData.value.selectedBrand === brandId) return
+      filterData.value.selectedBrand = brandId
+      emit('filter-change', getFilterParams())
+    }
+    //2.记录选择的销售属性
+    const changeProp = (item, proId) => {
+      if (item.selectedProp === proId) return
+      item.selectedProp = proId
+      emit('filter-change', getFilterParams())
+    }
+    return { filterData, filterLoading, changeBrand, changeProp }
   }
 }
 </script>

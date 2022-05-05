@@ -12,8 +12,8 @@
       </a>
     </div>
     <div class="check">
-      <XtxCheckbox v-model="sortParams.inventory">仅显示有货商品</XtxCheckbox>
-      <XtxCheckbox v-model="sortParams.onlyDiscount">仅显示特惠商品</XtxCheckbox>
+      <XtxCheckbox @change="changeCheck" v-model="sortParams.inventory">仅显示有货商品</XtxCheckbox>
+      <XtxCheckbox @change="changeCheck" v-model="sortParams.onlyDiscount">仅显示特惠商品</XtxCheckbox>
     </div>
   </div>
 </template>
@@ -21,17 +21,16 @@
 import { reactive } from 'vue'
 export default {
   name: 'SubSort',
-  setup() {
+  setup(props, { emit }) {
     // 1. 根据后台需要的参数定义数据对象
     // 2. 根据数据对象，绑定组件（复选框，排序按钮）
     // 3. 在操作排序组件的时候，需要反馈给数据对象
-    // sortField====>publishTime,orderNum,price,evaluateNum
-    // sortMethod====>asc为正序 desc为倒序
     const sortParams = reactive({
-      inventory: false,
-      onlyDiscount: false,
+      inventory: false, //显示有货商品
+      onlyDiscount: false, //显示特惠商品
+      //排序字段(publishTime[最新],orderNum[最高人气],price[价格],evaluateNum[评价最多])
       sortField: null,
-      sortMethod: null
+      sortMethod: null //排序方法(asc为正序 desc为倒序)
     })
 
     // 改变排序
@@ -51,9 +50,14 @@ export default {
         sortParams.sortField = sortField
         sortParams.sortMethod = null
       }
+      emit('sort-change', sortParams)
     }
-
-    return { sortParams, changeSort }
+    //筛选条件改变
+    const changeCheck = sortField => {
+      //因为是响应式数据,所以sortParams不用在形参传进来
+      emit('sort-change', sortParams)
+    }
+    return { sortParams, changeSort, changeCheck }
   }
 }
 </script>
