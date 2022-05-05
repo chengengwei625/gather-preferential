@@ -81,16 +81,7 @@ export default {
         }
       }
     )
-    //1．更改排序组件的筛选数据,重新请求
-    const sortChange = sortParams => {
-      finished.value = false
-      //合并请求参数,保留之前参数
-      reqParams = { ...reqParams, ...sortParams }
-      reqParams.page = 1
-      goodsList.value = []
-    }
-
-    // 2．更改筛选组件的筛选数据,重新请求
+    // 1．更改筛选组件的筛选数据,重新请求
     const filterChange = sortParams => {
       // console.log(obj)
       finished.value = false
@@ -99,6 +90,15 @@ export default {
       reqParams.page = 1
       goodsList.value = []
     }
+    //2．更改排序组件的筛选数据,重新请求
+    const sortChange = sortParams => {
+      finished.value = false
+      //合并请求参数,保留之前参数
+      reqParams = { ...reqParams, ...sortParams }
+      reqParams.page = 1
+      goodsList.value = []
+    }
+
     return { loading, finished, goodsList, getData, sortChange, filterChange }
   }
 }
