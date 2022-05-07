@@ -19,7 +19,7 @@
         <div class="spec">
           <!-- 大图右侧信息 -->
           <GoodName :goods="goods"></GoodName>
-          <GoodsSku></GoodsSku>
+          <GoodsSku :goods="goods"></GoodsSku>
         </div>
       </div>
       <!-- 商品推荐 -->
