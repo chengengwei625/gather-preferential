@@ -28,7 +28,7 @@
         </div>
       </div>
       <!-- 商品推荐 -->
-      <GoodsRelevant />
+      <GoodsRelevant :goodsId="goods.id"></GoodsRelevant>
       <!-- 商品详情 -->
       <div class="goods-footer">
         <div class="goods-article">
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import GoodsRelevant from './components/goods-relevant' //商品推荐
+import GoodsRelevant from './components/goods-relevant' //同类商品推荐
 import GoodsImage from './components/goods-image.vue' //商品大图
 import GoodsSales from './components/goods-sales.vue' //商品大图下方信息
 import GoodName from './components/goods-name.vue' //商品大图下方信息
