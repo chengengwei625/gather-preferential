@@ -19,7 +19,12 @@
         <div class="spec">
           <!-- 大图右侧信息 -->
           <GoodName :goods="goods"></GoodName>
-          <GoodsSku :goods="goods"></GoodsSku>
+          <!-- skuId="1369155865461919746" -->
+          <GoodsSku :goods="goods" @change="changeSku"></GoodsSku>
+          <!-- 数量选择组件 -->
+          <XtxNumbox label="数量" v-model="count" :max="goods.inventory"></XtxNumbox>
+          <!-- 按钮组件 -->
+          <XtxButton type="primary" style="margin-top: 20px">加入购物车</XtxButton>
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -44,7 +49,7 @@ import GoodsRelevant from './components/goods-relevant' //商品推荐
 import GoodsImage from './components/goods-image.vue' //商品大图
 import GoodsSales from './components/goods-sales.vue' //商品大图下方信息
 import GoodName from './components/goods-name.vue' //商品大图下方信息
-import GoodsSku from '@/views/goods/components/goods-sku' //SKU组件
+import GoodsSku from './components/goods-sku' //SKU组件
 import { nextTick, ref, watch } from 'vue'
 import { findGoods } from '@/api/product'
 import { useRoute } from 'vue-router'
@@ -53,7 +58,17 @@ export default {
   components: { GoodsRelevant, GoodsImage, GoodsSales, GoodName, GoodsSku },
   setup() {
     const goods = useGoods()
-    return { goods }
+    // sku改变时价格，优惠价格，库存也要更新
+    const changeSku = sku => {
+      if (sku.skuId) {
+        goods.value.price = sku.price
+        goods.value.oldPrice = sku.oldPrice
+        goods.value.inventory = sku.inventory
+      }
+    }
+    // 选择的数量
+    const count = ref(1)
+    return { goods, changeSku, count }
   }
 }
 // 获取商品详情

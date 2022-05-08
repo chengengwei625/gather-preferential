@@ -62,15 +62,28 @@ const updateDisabledStatus = (specs, pathMap) => {
       if (val.selected) return false
       // 未选中的替换对应的值(判断该规格下的其他值是否禁用)
       selectedArr[i] = val.name
-      console.log(selectedArr)
-      // 过滤无效值得到key
+      // console.log(selectedArr)
+      // 过滤无效值得到key(过滤掉undefined)
       const key = selectedArr.filter(value => value).join(spliter)
       // console.log(key)
       // 设置禁用状态
       val.disabled = !pathMap[key]
-      console.log(val.disabled)
+      // console.log(val.disabled)
     })
   })
+}
+// 根据SKU初始化选中状态
+const initSelectedStatus = (goods, skuId) => {
+  // 找到sku信息
+  const sku = goods.skus.find(sku => sku.id === skuId)
+  if (sku) {
+    goods.specs.forEach((item, i) => {
+      const valueName = sku.specs[i].valueName
+      item.values.forEach(val => {
+        val.selected = val.name === valueName
+      })
+    })
+  }
 }
 export default {
   name: 'GoodsSku',
@@ -78,12 +91,21 @@ export default {
     goods: {
       type: Object,
       default: () => ({})
+    },
+    skuId: {
+      type: String,
+      default: ''
     }
   },
-  setup(props) {
+  setup(props, { emit }) {
+    // 根据skuId初始化选中
+    if (props.skuId) {
+      initSelectedStatus(props.goods, props.skuId)
+    }
     const pathMap = getPathMap(props.goods.skus)
     // 组件初始化:更新按钮禁用状态
     updateDisabledStatus(props.goods.specs, pathMap)
+    // 规格点击事件
     const clickSpecs = (item, val) => {
       // 当按钮是禁用的阻止程序进行
       if (val.disabled) return
@@ -98,6 +120,27 @@ export default {
       }
       // 点击按钮时:更新按钮的禁用状态
       updateDisabledStatus(props.goods.specs, pathMap)
+      // 触发change事件将sku数据传递出去
+      // 过滤掉undefined,==>['黑色', '中国', '10cm']
+      const selectedArr = getSelectedArr(props.goods.specs).filter(v => v)
+      // 完整的sku组合，提交给父组件
+      if (selectedArr.length === props.goods.specs.length) {
+        // 拼接数组 {蓝色-中国-10cm: ['1369155864430120962']}
+        const skuIds = pathMap[selectedArr.join(spliter)]
+        // 通过找到的路径对象的skuid找goods.skus里的sku数据项['1369155864430120962']
+        const sku = props.goods.skus.find(sku => sku.id === skuIds[0])
+        // 传递
+        emit('change', {
+          skuId: sku.id,
+          price: sku.price,
+          oldPrice: sku.oldPrice,
+          inventory: sku.inventory,
+          specsText: sku.specs.reduce((p, n) => `${p} ${n.name}：${n.valueName}`, '').replace(' ', '')
+        })
+      } else {
+        // 不完整的sku组合
+        emit('change', {})
+      }
     }
     return { clickSpecs }
   }
