@@ -33,12 +33,15 @@
       <div class="goods-footer">
         <div class="goods-article">
           <!-- 商品+评价 -->
-          <div class="goods-tabs"></div>
+          <GoodsTabs :goods="goods"></GoodsTabs>
           <!-- 注意事项 -->
-          <div class="goods-warn"></div>
+          <GoodsWarn></GoodsWarn>
         </div>
-        <!-- 24热榜+专题推荐 -->
-        <div class="goods-aside"></div>
+        <!-- 24热榜+周榜 -->
+        <div class="goods-aside">
+          <GoodsHot></GoodsHot>
+          <GoodsHot :type="2"></GoodsHot>
+        </div>
       </div>
     </div>
   </div>
@@ -50,12 +53,15 @@ import GoodsImage from './components/goods-image.vue' //商品大图
 import GoodsSales from './components/goods-sales.vue' //商品大图下方信息
 import GoodName from './components/goods-name.vue' //商品大图下方信息
 import GoodsSku from './components/goods-sku' //SKU组件
-import { nextTick, ref, watch } from 'vue'
+import GoodsTabs from './components/goods-tabs' //tab栏切换
+import GoodsHot from './components/goods-hot' //热榜商品
+import GoodsWarn from './components/goods-warn'
+import { nextTick, ref, watch, provide } from 'vue'
 import { findGoods } from '@/api/product'
 import { useRoute } from 'vue-router'
 export default {
   name: 'XtxGoodsPage',
-  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodName, GoodsSku },
+  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodName, GoodsSku, GoodsTabs, GoodsHot, GoodsWarn },
   setup() {
     const goods = useGoods()
     // sku改变时价格，优惠价格，库存也要更新
@@ -68,6 +74,8 @@ export default {
     }
     // 选择的数量
     const count = ref(1)
+    // 将数据提供给后代组件
+    provide('goods', goods)
     return { goods, changeSku, count }
   }
 }
@@ -124,10 +132,10 @@ const useGoods = () => {
     min-height: 1000px;
   }
 }
-.goods-tabs {
-  min-height: 600px;
-  background: #fff;
-}
+// .goods-tabs {
+//   min-height: 600px;
+//   background: #fff;
+// }
 .goods-warn {
   min-height: 600px;
   background: #fff;
