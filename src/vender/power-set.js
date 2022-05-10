@@ -1,6 +1,6 @@
 /**
  * Find power-set of a set using BITWISE approach.
- *
+ * 求数组中的子集
  * @param {*[]} originalSet
  * @return {*[][]}
  */

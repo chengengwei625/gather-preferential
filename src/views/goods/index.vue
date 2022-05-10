@@ -55,7 +55,7 @@ import GoodName from './components/goods-name.vue' //商品大图下方信息
 import GoodsSku from './components/goods-sku' //SKU组件
 import GoodsTabs from './components/goods-tabs' //tab栏切换
 import GoodsHot from './components/goods-hot' //热榜商品
-import GoodsWarn from './components/goods-warn'
+import GoodsWarn from './components/goods-warn' //注意事项
 import { nextTick, ref, watch, provide } from 'vue'
 import { findGoods } from '@/api/product'
 import { useRoute } from 'vue-router'
@@ -74,7 +74,7 @@ export default {
     }
     // 选择的数量
     const count = ref(1)
-    // 将数据提供给后代组件
+    // 将数据提供给后代组件(由于返回的goods是ref声明的,inject注入时要.value)
     provide('goods', goods)
     return { goods, changeSku, count }
   }
