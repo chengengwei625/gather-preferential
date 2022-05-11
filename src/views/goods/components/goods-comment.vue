@@ -20,7 +20,7 @@
       </div>
     </div>
     <!-- 排序 -->
-    <div class="sort">
+    <div class="sort" v-if="commentInfo">
       <span>排序：</span>
       <a @click="reqParams.sortField = null" href="javascript:;" :class="{ active: reqParams.sortField === null }">默认</a>
       <a @click="reqParams.sortField = 'createTime'" href="javascript:;" :class="{ active: reqParams.sortField === 'createTime' }">最新</a>
@@ -52,6 +52,8 @@
         </div>
       </div>
     </div>
+    <!-- 分页组件 -->
+    <XtxPagination v-if="total" :total="total" :page-size="reqParams.pageSize" :current-page="reqParams.page" @current-change="changePager"></XtxPagination>
   </div>
 </template>
 <script>
@@ -112,13 +114,17 @@ export default {
     }
     // 评论列表
     const commentList = ref([])
+    // 评论总数
+    const total = ref(0)
     // 初始化和筛选条件都发生变化是发请求
     watch(
       reqParams,
       async () => {
-        const data = await findGoodsCommentList(goods.id, reqParams)
+        // goods是inject注入进来的,且goods是ref声明的所有要.value
+        const data = await findGoodsCommentList(goods.value.id, reqParams)
         commentList.value = data.result.items
-        console.log(data.result.items)
+        total.value = data.result.counts
+        // console.log(data.result.items)
       },
       { immediate: true }
     )
@@ -132,7 +138,11 @@ export default {
       // substring(0,1)截取字符串0到1索引(不包括1)的值
       return nickname.substring(0, 1) + '****' + nickname.substr(-1)
     }
-    return { commentInfo, currentTagIndex, changeTag, reqParams, commentList, changeSort, formatSpecs, formatNickname }
+    // 页码改变事件
+    const changePager = newPage => {
+      reqParams.page = newPage
+    }
+    return { commentInfo, currentTagIndex, changeTag, reqParams, commentList, changeSort, formatSpecs, formatNickname, total, changePager }
   }
 }
 </script>
