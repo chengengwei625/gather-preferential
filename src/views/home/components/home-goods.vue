@@ -71,7 +71,7 @@ export default {
     width: 100%;
     background: @xtxColor;
     text-align: center;
-    //在3D空间内移动一个元素的位置。第二个代表在y轴向上移动100%
+    //在3D空间内移动一个元素的位置。第二个代表在y轴向下移动100%
     transform: translate3d(0, 100%, 0);
     transition: all 0.5s;
     span {

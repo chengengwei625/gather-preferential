@@ -3,7 +3,8 @@ const Layout = () => import(/*webpackChunkName: "Layout" */ '@/views/Layout')
 const Home = () => import(/*webpackChunkName: "Home" */ '@/views/home')
 const TopCategory = () => import(/*webpackChunkName: "TopCategory" */ '@/views/category/index')
 const SubCategory = () => import(/*webpackChunkName: "SubCategory" */ '@/views/category/sub')
-const Goods = () => import(/*webpackChunkName: "SubCategory" */ '@/views/goods/index')
+const Goods = () => import(/*webpackChunkName: "Goods" */ '@/views/goods/index')
+const Login = () => import(/*webpackChunkName: "Login" */ '@/views/login/index')
 const routes = [
   {
     path: '/',
@@ -14,7 +15,8 @@ const routes = [
       { path: 'category/sub/:id', component: SubCategory },
       { path: 'product/:id', component: Goods }
     ]
-  }
+  },
+  { path: '/login', component: Login }
 ]
 //Vue3.0 createRouter({})创建路由实例
 const router = createRouter({
