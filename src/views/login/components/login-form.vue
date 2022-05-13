@@ -36,7 +36,7 @@
           <div class="input">
             <i class="iconfont icon-code"></i>
             <Field :class="{ error: errors.code }" v-model="form.code" name="code" type="text" placeholder="请输入验证码" />
-            <span class="code">发送验证码</span>
+            <span @click="send()" class="code">{{ time === 0 ? '发送验证码' : `${time}秒后发送` }}</span>
           </div>
           <div class="error" v-if="errors.code"><i class="iconfont icon-warning" />{{ errors.code }}</div>
         </div>
@@ -64,10 +64,15 @@
 </template>
 
 <script>
-import { ref, reactive, watch, getCurrentInstance } from 'vue'
-import { Form, Field } from 'vee-validate'
+import Message from '@/components/library/Message'
 import schema from '@/utils/vee-validate-schema'
-// import Message from '@/components/library/Message'
+// , getCurrentInstance
+import { ref, reactive, watch, onUnmounted } from 'vue'
+import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
+import { Form, Field } from 'vee-validate'
+import { userAccountLogin, userMobileLoginMsg, userMobileLogin } from '@/api/user'
+// import { useIntervalFn } from '@vueuse/core'
 export default {
   name: 'LoginForm',
   components: { Form, Field },
@@ -82,7 +87,12 @@ export default {
       mobile: null, // 手机
       code: null // 验证码
     })
-
+    // 使用store
+    const store = useStore()
+    // 使用router
+    const router = useRouter()
+    // 使用route
+    const route = useRoute()
     //vee-validate 校验基本步骤
     //1.导入Form Field组件将form和input进行替换,需要加上name用来指定将来的校验规则函数的
     //2.Field 需要进行数据绑定,字段名称最好和后台接口需要的一致
@@ -110,16 +120,97 @@ export default {
       formCom.value.resetForm()
     })
     // getCurrentInstance()拿到应用实例,通过结构出 proxy 就是当前组件实例
-    const { proxy } = getCurrentInstance()
+    // const { proxy } = getCurrentInstance()
     //需要在点击登录的时候对整体表单进行校验
     const loginFn = async () => {
       //Form组件提供了一个validate函数作为整体表单校验,当是返回的是一个promise
       const valid = await formCom.value.validate()
-      console.log(valid)
       // Message({ type: 'success', text: '用户名或者密码错误' })
-      proxy.$message({ type: 'success', text: '用户名或者密码错误' })
+      // proxy.$message({ type: 'success', text: '用户名或者密码错误' })
+      // 1.准备一个AP工做帐号登录
+      // 2.调用API函数
+      // 3.成功:存储用户信息 + 跳转至来源页或者首页 + 消息提示
+      // 4.失败:消息提示
+      if (valid) {
+        let data = null
+        // 发送请求
+        try {
+          if (!isMsgLogin.value) {
+            // 帐号密码登录
+            const { account, password } = form
+            data = await userAccountLogin({ account, password })
+          } else {
+            // 短信登录
+            const { mobile, code } = form
+            data = await userMobileLogin({ mobile, code })
+          }
+        } catch (e) {
+          if (e.response.data) {
+            // 失败提示
+            Message({ type: 'error', text: e.response.data.message || '登录失败' })
+          }
+        }
+        // 成功
+        // 1. 存储信息
+        const { id, account, nickname, avatar, token, mobile } = data.result
+        store.commit('user/setUser', { id, account, nickname, avatar, token, mobile })
+        // 2. 提示
+        Message({ type: 'success', text: '登录成功' })
+        // 3. 跳转
+        router.push(route.query.redirectUrl || '/')
+      }
     }
-    return { isMsgLogin, form, mySchema, formCom, loginFn }
+    // pause 暂停 resume 开始
+    // useIntervalFn(回调函数,执行间隔,是否立即开启)
+    const time = ref(0)
+    let timer = null
+    // const { pause, resume } = useIntervalFn(
+    //   () => {
+    //     time.value--
+    //     if (time.value <= 0) {
+    //       pause()
+    //     }
+    //   },
+    //   1000,
+    //   false
+    // )
+
+    // 发送短信
+    const send = async () => {
+      const valid = mySchema.mobile(form.mobile)
+      if (valid === true) {
+        // 通过
+        if (time.value === 0) {
+          // 没有倒计时才可以发送
+          try {
+            await userMobileLoginMsg(form.mobile)
+          } catch (error) {
+            Message({ type: 'error', text: error.response.data.message || '发送失败' })
+          }
+          time.value = 5
+          clearInterval(timer)
+          timer = setInterval(() => {
+            time.value--
+            if (time.value <= 0) {
+              clearInterval(timer)
+            }
+          }, 1000)
+          Message({ type: 'success', text: '发送成功' })
+          // time.value = 60
+          // resume()
+        }
+      } else {
+        // 失败，使用vee的错误函数显示错误信息 setFieldError(字段,错误信息)
+        formCom.value.setFieldError('mobile', valid)
+      }
+
+      // 组件销毁时暂停
+      onUnmounted(() => {
+        // pause()
+        clearInterval(timer)
+      })
+    }
+    return { isMsgLogin, form, mySchema, formCom, loginFn, send, time }
   }
   // created() {
   //   this.$message({ text: '测试警告' })
