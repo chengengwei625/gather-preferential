@@ -5,6 +5,7 @@ const TopCategory = () => import(/*webpackChunkName: "TopCategory" */ '@/views/c
 const SubCategory = () => import(/*webpackChunkName: "SubCategory" */ '@/views/category/sub')
 const Goods = () => import(/*webpackChunkName: "Goods" */ '@/views/goods/index')
 const Login = () => import(/*webpackChunkName: "Login" */ '@/views/login/index')
+const LoginCallback = () => import(/*webpackChunkName: "callback" */ '@/views/login/callback')
 const routes = [
   {
     path: '/',
@@ -16,7 +17,8 @@ const routes = [
       { path: 'product/:id', component: Goods }
     ]
   },
-  { path: '/login', component: Login }
+  { path: '/login', component: Login },
+  { path: '/login/callback', component: LoginCallback }
 ]
 //Vue3.0 createRouter({})创建路由实例
 const router = createRouter({

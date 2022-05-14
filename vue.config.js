@@ -26,5 +26,17 @@ module.exports = defineConfig({
           maxSize: 10 * 1024 // 10KiB
         }
       })
+  },
+  // 开启域名访问
+  devServer: {
+    historyApiFallback: true,
+    allowedHosts: ['www.corho.com'],
+    port: 8080
+  },
+  // 这个是设置外部扩展，模块为qc变量名为QC，导入qc将不做打包。
+  configureWebpack: {
+    externals: {
+      qc: 'QC'
+    }
   }
 })
