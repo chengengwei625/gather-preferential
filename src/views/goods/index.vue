@@ -24,7 +24,7 @@
           <!-- 数量选择组件 -->
           <XtxNumbox label="数量" v-model="count" :max="goods.inventory"></XtxNumbox>
           <!-- 按钮组件 -->
-          <XtxButton type="primary" style="margin-top: 20px">加入购物车</XtxButton>
+          <XtxButton @click="insertCart" type="primary" style="margin-top: 20px">加入购物车</XtxButton>
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -56,9 +56,11 @@ import GoodsSku from './components/goods-sku' //SKU组件
 import GoodsTabs from './components/goods-tabs' //tab栏切换
 import GoodsHot from './components/goods-hot' //热榜商品
 import GoodsWarn from './components/goods-warn' //注意事项
+import Message from '@/components/library/Message' // 提示组件
 import { nextTick, ref, watch, provide } from 'vue'
 import { findGoods } from '@/api/product'
 import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
 export default {
   name: 'XtxGoodsPage',
   components: { GoodsRelevant, GoodsImage, GoodsSales, GoodName, GoodsSku, GoodsTabs, GoodsHot, GoodsWarn },
@@ -67,6 +69,13 @@ export default {
     // sku改变时价格，优惠价格，库存也要更新
     const changeSku = sku => {
       if (sku.skuId) {
+        // 有图就保留,没图就删除picture属性
+        if (!sku.skuPicture) {
+          delete sku.skuPicture
+        }
+        // 若没选完整规格sku是 {}
+        currSku.value = sku
+        // console.log(sku)
         goods.value.price = sku.price
         goods.value.oldPrice = sku.oldPrice
         goods.value.inventory = sku.inventory
@@ -76,7 +85,38 @@ export default {
     const count = ref(1)
     // 将数据提供给后代组件(由于返回的goods是ref声明的,inject注入时要.value)
     provide('goods', goods)
-    return { goods, changeSku, count }
+
+    // 加入购物车
+    const currSku = ref(null)
+    // const instance = getCurrentInstance()
+    const store = useStore()
+    const insertCart = () => {
+      if (!currSku.value) {
+        return Message({ type: 'warn', text: '请选择商品规格' })
+      }
+      if (count.value > goods.inventory) {
+        return Message({ type: 'warn', text: '库存不足' })
+      }
+      store
+        .dispatch('cart/insertCart', {
+          id: goods.value.id,
+          skuId: currSku.value.skuId,
+          name: goods.value.name,
+          picture: currSku.value.skuPicture || goods.value.mainPictures[0],
+          price: currSku.value.price, // 加入时价格
+          nowPrice: currSku.value.price, // 当前价格
+          attrsText: currSku.value.specsText, // 属性文字
+          stock: currSku.value.inventory, // 库存
+          count: count.value, // 加购数量
+          selected: true, // 是否选中
+          isEffective: true // 是否有效
+        })
+        .then(() => {
+          // instance.proxy.$message('加入购物车成功', 'success')
+          Message({ type: 'success', text: '加入购物车成功' })
+        })
+    }
+    return { goods, changeSku, count, insertCart }
   }
 }
 // 获取商品详情

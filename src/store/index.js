@@ -10,10 +10,13 @@ export default createStore({
     user,
     category
   },
+  // plugins是vuex提供的插件配置
   plugins: [
     createPersistedState({
       key: 'rabbit-fresh',
+      // 需要缓存的模块
       paths: ['user', 'cart']
+      // 存储的地方
       // storage: window.localStorage,
       // whiteList: [],
       // blackList: []

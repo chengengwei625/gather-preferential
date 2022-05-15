@@ -129,13 +129,16 @@ export default {
         const skuIds = pathMap[selectedArr.join(spliter)]
         // 通过找到的路径对象的skuid找goods.skus里的sku数据项['1369155864430120962']
         const sku = props.goods.skus.find(sku => sku.id === skuIds[0])
+        // 找到对应sku的规格图片
+        const skuPicture = props.goods.specs[0].values.find(val => val.name === selectedArr[0]).picture
         // 传递
         emit('change', {
           skuId: sku.id,
           price: sku.price,
           oldPrice: sku.oldPrice,
           inventory: sku.inventory,
-          specsText: sku.specs.reduce((p, n) => `${p} ${n.name}：${n.valueName}`, '').replace(' ', '')
+          specsText: sku.specs.reduce((p, n) => `${p} ${n.name}：${n.valueName}`, '').replace(' ', ''),
+          skuPicture: skuPicture || null
         })
       } else {
         // 不完整的sku组合

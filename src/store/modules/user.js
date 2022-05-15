@@ -1,5 +1,6 @@
 //用户模块
 export default {
+  // 开启命名空间
   namespaced: true,
   //写成函数形式相互之前不会有影响(语法要求)
   state() {
