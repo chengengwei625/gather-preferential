@@ -15,12 +15,12 @@ const routes = [
       { path: '', component: Home },
       { path: 'category/:id', component: TopCategory },
       { path: 'category/sub/:id', component: SubCategory },
-      { path: 'product/:id', component: Goods }
+      { path: 'product/:id', component: Goods },
+      { path: 'cart', component: CartPage }
     ]
   },
   { path: '/login', component: Login },
-  { path: '/login/callback', component: LoginCallback },
-  { path: '/cart', component: CartPage }
+  { path: '/login/callback', component: LoginCallback }
 ]
 //Vue3.0 createRouter({})创建路由实例
 const router = createRouter({
