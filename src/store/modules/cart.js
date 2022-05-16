@@ -19,8 +19,29 @@ export default {
     },
     // 有效商品总金额
     validAmount(state, getters) {
-      // parseInt先转化为整数,再去计算
-      return getters.validList.reduce((p, c) => p + parseInt(c.nowPrice * 100) * c.count, 0) / 100
+      // 四舍五入,再去计算
+      return getters.validList.reduce((p, c) => p + Math.round(c.nowPrice * 100) * c.count, 0) / 100
+    },
+    // 无效商品列表
+    invalidList(state) {
+      return state.list.filter(item => !(item.stock > 0 && item.isEffective))
+    },
+    // 选中商品列表
+    selectedList(state, getters) {
+      return getters.validList.filter(item => item.selected)
+    },
+    // 选中商品件数
+    selectedTotal(state, getters) {
+      return getters.selectedList.reduce((p, c) => p + c.count, 0)
+    },
+    // 选中商品总金额
+    selectedAmount(state, getters) {
+      return getters.selectedList.reduce((p, c) => p + c.nowPrice * 100 * c.count, 0) / 100
+    },
+    // 是否全选
+    isCheckAll(state, getters) {
+      // 有效商品数量和选中商品数量相等 并且 有效商品不能为0
+      return getters.validList.length === getters.selectedList.length && getters.selectedList.length !== 0
     }
   },
   mutations: {
