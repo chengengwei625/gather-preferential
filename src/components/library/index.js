@@ -9,6 +9,7 @@
 // import XtxBreadItem from '@/components/library/xtx-bread-item'
 import defaultImg from '@/assets/images/200.png'
 import Message from './Message.js'
+import Confirm from './Confirm'
 
 // 导入library文件夹下的所有组件
 // 批量导入需要使用一个函数 require.context(dir,deep,matching)
@@ -40,6 +41,7 @@ export default {
     defineDirective(app)
     // 定义一个原型函数
     app.config.globalProperties.$message = Message
+    app.config.globalProperties.$confirm = Confirm
   }
 }
 //1.图片懒加载指令 v-lazy
@@ -67,6 +69,7 @@ const defineDirective = app => {
           }
         },
         {
+          // 出现在视口比例
           threshold: 0.01
         }
       )

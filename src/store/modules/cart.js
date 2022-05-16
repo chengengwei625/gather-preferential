@@ -80,6 +80,7 @@ export default {
       // 找到对应sku商品的索引
       const index = state.list.findIndex(item => item.skuId === skuId)
       // 删除对应索引的项
+      console.log(index, '删除')
       state.list.splice(index, 1)
     }
   },
@@ -162,6 +163,23 @@ export default {
           // 1. 获取有效的商品列表，遍历的去调用修改mutations即可
           ctx.getters.validList.forEach(item => {
             ctx.commit('updateCart', { skuId: item.skuId, selected })
+          })
+          resolve()
+        }
+      })
+    },
+    // 批量删除选中商品
+    batchDeleteCart(ctx) {
+      return new Promise((resolve, reject) => {
+        if (ctx.rootState.user.profile.token) {
+          // 登录 TODO
+        } else {
+          // 本地
+          // 1. 获取选中商品列表，进行遍历调用deleteCart mutataions函数
+
+          ctx.getters.selectedList.forEach(item => {
+            console.log(ctx.getters.selectedList, 6666666)
+            ctx.commit('deleteCart', item.skuId)
           })
           resolve()
         }
