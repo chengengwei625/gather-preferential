@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import store from '@/store' // js模块不用导入vuex,直接导目录默认时index.js
 const Layout = () => import(/*webpackChunkName: "Layout" */ '@/views/Layout')
 const Home = () => import(/*webpackChunkName: "Home" */ '@/views/home')
 const TopCategory = () => import(/*webpackChunkName: "TopCategory" */ '@/views/category/index')
@@ -33,5 +34,14 @@ const router = createRouter({
     return { legt: 0, top: 0 }
   }
 })
-
+// 前置导航守卫
+router.beforeEach((to, from, next) => {
+  // 用户信息
+  const token = store.state.user.profile.token
+  // 跳转去member开头的地址却没有登录
+  if (to.path.startsWith('/member') && !token) {
+    next({ path: '/login', query: { redirectUrl: to.fullPath } })
+  }
+  next()
+})
 export default router

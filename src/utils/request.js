@@ -50,6 +50,7 @@ instance.interceptors.response.use(
       //js模块里头:router.currentRoute.value.fullPath 就是当前路由地址,router.currentRouter 是响应式数据使用得加.value
       //encodeURIComponent转换编码格式,防止报错
       router.replace(`/login?redirectUrl=${encodeURIComponent(router.currentRoute.value.fullPath)}`)
+      // router.replace({ path: '/register', query: { redirectUrl: router.currentRoute.value.fullPath } })
     }
 
     return Promise.reject(error)
