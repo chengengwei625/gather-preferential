@@ -140,10 +140,13 @@ export default {
         // 1. 存储信息
         const { id, account, nickname, avatar, token, mobile } = data.result
         store.commit('user/setUser', { id, account, nickname, avatar, token, mobile })
-        // 2. 提示
-        Message({ type: 'success', text: 'QQ绑定成功' })
-        // 3. 跳转
-        router.push(store.state.user.redirectUrl)
+        // 合并购物车成功在提示和跳转
+        store.dispatch('cart/mergeLocalCart').then(() => {
+          // 2. 跳转到来源页或者首页
+          router.push(store.state.user.redirectUrl)
+          // 3. 成功提示
+          Message({ type: 'success', text: 'QQ登录成功' })
+        })
       }
     }
     return { nickname, avatar, form, mySchema, send, formCom, time, submit }

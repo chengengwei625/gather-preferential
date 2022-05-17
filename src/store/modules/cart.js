@@ -1,4 +1,4 @@
-import { getNewCartGoods } from '@/api/cart'
+import { getNewCartGoods, mergeLocalCart } from '@/api/cart'
 export default {
   //命名空间
   namespaced: true,
@@ -99,6 +99,10 @@ export default {
         // 没有相同的商品替换
         state.list.splice(index, 1, newGoods)
       }
+    },
+    // 设置购物车列表(清空或从服务器设置给本地)
+    setCartList(state, list) {
+      state.list = list
     }
   },
   actions: {
@@ -218,6 +222,16 @@ export default {
           ctx.commit('updateCartSku', newGoods)
         }
       })
+    },
+    // 合并本地购物车
+    async mergeLocalCart(ctx) {
+      // 存储token后调用合并API接口函数进行购物合并
+      const cartList = ctx.getters.validList.map(({ skuId, selected, count }) => {
+        return { skuId, selected, count }
+      })
+      await mergeLocalCart(cartList)
+      // 合并成功将本地购物车删除
+      ctx.commit('setCartList', [])
     }
   }
 }
