@@ -1,4 +1,4 @@
-import { getNewCartGoods, mergeLocalCart, findCartList, insertCart } from '@/api/cart'
+import { getNewCartGoods, mergeLocalCart, findCartList, insertCart, deleteCart, updateCart } from '@/api/cart'
 export default {
   //命名空间
   namespaced: true,
@@ -111,7 +111,7 @@ export default {
       return new Promise((resolve, reject) => {
         // state是当前模块的状态
         // rootState是所有模块的状态
-        if (ctx.rootState.user.token) {
+        if (ctx.rootState.user.profile.token) {
           // 已登录 TODO
           insertCart(goods)
             .then(() => {
@@ -168,6 +168,16 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 登录 TODO
+          deleteCart([skuId])
+            .then(() => {
+              // 成功时调用API获取购物车列表
+              return findCartList()
+            })
+            .then(data => {
+              // 根据上面的列表设置给vuex
+              ctx.commit('setCartList', data.result)
+              resolve()
+            })
         } else {
           // 本地
           ctx.commit('deleteCart', skuId)
@@ -181,6 +191,16 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 登录 TODO
+          updateCart(goods)
+            .then(() => {
+              // 成功后调用API更新购物车数据
+              return findCartList()
+            })
+            .then(data => {
+              // 将数据设置给vuex
+              ctx.commit('setCartList', data.result)
+              resolve()
+            })
         } else {
           // 本地
           ctx.commit('updateCart', goods)
@@ -208,6 +228,18 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 登录 TODO
+          // 得到需要删除的商品列表（失效，选中）的skuId集合
+          const ids = ctx.getters[isClear ? 'invalidList' : 'selectedList'].map(item => item.skuId)
+          deleteCart(ids)
+            .then(() => {
+              // 成功后调用API更新购物车数据
+              return findCartList()
+            })
+            .then(data => {
+              // 将数据设置给vuex
+              ctx.commit('setCartList', data.result)
+              resolve()
+            })
         } else {
           // 本地
           // 1. 获取选中商品列表，进行遍历调用deleteCart mutataions函数
