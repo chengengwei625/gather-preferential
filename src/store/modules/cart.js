@@ -1,4 +1,4 @@
-import { getNewCartGoods, mergeLocalCart } from '@/api/cart'
+import { getNewCartGoods, mergeLocalCart, findCartList, insertCart } from '@/api/cart'
 export default {
   //命名空间
   namespaced: true,
@@ -107,30 +107,44 @@ export default {
   },
   actions: {
     // 加入购物车(异步操作)
-    insertCart(context, goods) {
+    insertCart(ctx, goods) {
       return new Promise((resolve, reject) => {
         // state是当前模块的状态
         // rootState是所有模块的状态
-        if (context.rootState.user.token) {
+        if (ctx.rootState.user.token) {
           // 已登录 TODO
+          insertCart(goods)
+            .then(() => {
+              // 成功时调用API获取购物车列表
+              return findCartList()
+            })
+            .then(data => {
+              // 根据上面的列表设置给vuex
+              ctx.commit('setCartList', data.result)
+              resolve()
+            })
         } else {
           // 未登录
-          context.commit('insertCart', goods)
+          ctx.commit('insertCart', goods)
           resolve()
         }
       })
     },
     // 获取购物车列表
-    findCartList(context) {
+    findCartList(ctx) {
       return new Promise((resolve, reject) => {
-        if (context.rootState.user.profile.token) {
-          // 登录 TODO
+        if (ctx.rootState.user.profile.token) {
+          // 登录后调用API获取购物车列表
+          findCartList().then(data => {
+            ctx.commit('setCartList', data.result)
+            resolve()
+          })
         } else {
           // 本地
           // Promise.all() 可以并列发送多个请求，等所有请求成功，调用then
           // Promise.race() 可以并列发送多个请求，等最快的请求成功，调用then
           // 传参事promise数组
-          const promiseArr = context.state.list.map(item => {
+          const promiseArr = ctx.state.list.map(item => {
             // 返回接口函数的调用
             return getNewCartGoods(item.skuId)
           })
@@ -139,7 +153,7 @@ export default {
               // dataArr数组元素顺序和promiseArr数组元素顺序一致,所以索引都一样
               dataArr.forEach((data, i) => {
                 // 提交一个对象给updataCart,对象添加对应的skuId
-                context.commit('updateCart', { skuId: context.state.list[i].skuId, ...data.result })
+                ctx.commit('updateCart', { skuId: ctx.state.list[i].skuId, ...data.result })
               })
               resolve()
             })

@@ -39,7 +39,9 @@ export default {
     })
     const router = useRouter()
     const logout = () => {
+      // 清空用户信息
       store.commit('user/setUser', {})
+      // 清空购物车
       store.commit('user/setCartList', [])
       router.push('/login')
     }
