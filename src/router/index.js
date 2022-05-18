@@ -8,8 +8,10 @@ const Goods = () => import(/*webpackChunkName: "Goods" */ '@/views/goods/index')
 const Login = () => import(/*webpackChunkName: "Login" */ '@/views/login/index')
 const LoginCallback = () => import(/*webpackChunkName: "LoginCallback" */ '@/views/login/callback')
 const CartPage = () => import(/*webpackChunkName: "CartPage" */ '@/views/cart/index')
+const Checkout = () => import(/*webpackChunkName: "Checkout" */ '@/views/memmber/pay/checkout')
 const routes = [
   {
+    // 一级路由布局容器
     path: '/',
     component: Layout,
     children: [
@@ -17,7 +19,8 @@ const routes = [
       { path: 'category/:id', component: TopCategory },
       { path: 'category/sub/:id', component: SubCategory },
       { path: 'product/:id', component: Goods },
-      { path: 'cart', component: CartPage }
+      { path: 'cart', component: CartPage },
+      { path: 'member/checkout', component: Checkout }
     ]
   },
   { path: '/login', component: Login },
@@ -40,6 +43,7 @@ router.beforeEach((to, from, next) => {
   const token = store.state.user.profile.token
   // 跳转去member开头的地址却没有登录
   if (to.path.startsWith('/member') && !token) {
+    // next('/login?redirectUrl=' + encodeURIComponent(to.fullPath))
     next({ path: '/login', query: { redirectUrl: to.fullPath } })
   }
   next()
