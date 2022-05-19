@@ -1,31 +1,54 @@
 <template>
-  <div class="xtx-dialog" :class="{ fade }">
+  <!-- v-show先执行,组件渲染好了再加动画出现 -->
+  <div class="xtx-dialog" v-show="visible" :class="{ fade }">
     <div class="wrapper" :class="{ fade }">
       <div class="header">
-        <h3>切换收货地址</h3>
-        <a href="JavaScript:;" class="iconfont icon-close-new"></a>
+        <h3>{{ title }}</h3>
+        <a @click="close" href="JavaScript:;" class="iconfont icon-close-new"></a>
       </div>
-      <div class="body">对话框内容</div>
+      <div class="body"><slot /></div>
       <div class="footer">
-        <XtxButton type="gray" style="margin-right: 20px">取消</XtxButton>
-        <XtxButton type="primary">确认</XtxButton>
+        <slot name="footer" />
       </div>
     </div>
   </div>
 </template>
 <script>
-import { ref, onMounted } from 'vue'
+// vue2.0 visible.sync 语法糖拆解 (:visible + @update:visible)
+// vue3.0 v-model 语法糖拆解 (:modelValue + @update:modelValue)
+// vue3.0 v-model:visible 语法糖拆解 (:visible + @update:visible)
+import { ref, watch } from 'vue'
 export default {
   name: 'XtxDialog',
-  setup() {
-    const fade = ref(false)
-    onMounted(() => {
-      // 结构和样式同时加上无过度效果，需要些延时。
-      setTimeout(() => {
-        fade.value = true
-      }, 0)
-    })
-    return { fade }
+  props: {
+    title: {
+      type: String,
+      default: ''
+    },
+    visible: {
+      type: Boolean,
+      default: false
+    }
+  },
+  setup(props, { emit }) {
+    const fade = ref(true)
+    // 改造动画执行时机
+    watch(
+      () => props.visible,
+      () => {
+        // 过渡动画需要要延迟添加
+        setTimeout(() => {
+          // 根据visible控制 fade属性 从而控制显示和隐藏
+          fade.value = props.visible
+        }, 0)
+      },
+      { immediate: true }
+    )
+    // 关闭的时候通知父组件
+    const close = () => {
+      emit('update:visible', false)
+    }
+    return { fade, close }
   }
 }
 </script>
@@ -38,8 +61,8 @@ export default {
   height: 100%;
   z-index: 8887;
   background: rgba(0, 0, 0, 0);
+  transition: all 0.4s;
   &.fade {
-    transition: all 0.4s;
     background: rgba(0, 0, 0, 0.5);
   }
   .wrapper {
@@ -51,8 +74,8 @@ export default {
     left: 50%;
     transform: translate(-50%, -60%);
     opacity: 0;
+    transition: all 0.4s;
     &.fade {
-      transition: all 0.4s;
       transform: translate(-50%, -50%);
       opacity: 1;
     }

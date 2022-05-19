@@ -9,31 +9,54 @@
         <li><span>联系方式：</span>{{ showAddress.contact.replace(/^(\d{3})\d{4}(\d{4})/, '$1****$2') }}</li>
         <li><span>收货地址：</span>{{ showAddress.fullLocation.replace(/ /g, '') + showAddress.address }}</li>
       </ul>
-      <a v-if="showAddress" href="javascript:;">修改地址</a>
+      <a @click="openAddressEdit(showAddress)" v-if="showAddress" href="javascript:;">修改地址</a>
     </div>
     <div class="action">
-      <XtxButton class="btn">切换地址</XtxButton>
-      <XtxButton class="btn">添加地址</XtxButton>
+      <XtxButton @click="openDialog()" class="btn">切换地址</XtxButton>
+      <XtxButton @click="openAddressEdit({})" class="btn">添加地址</XtxButton>
     </div>
   </div>
-  <!-- 确认框组件 -->
-  <XtxDialog></XtxDialog>
+  <!-- 切换收货地址 - 确认框组件 -->
+  <XtxDialog ref="addressEdit" title="切换收货地址" v-model:visible="dialogVisible">
+    <div @click="selectedAddress = item" :class="{ active: selectedAddress?.id === item.id }" class="text item" v-for="item in list" :key="item.id">
+      <ul>
+        <li>
+          <span>收<i />货<i />人：</span>{{ item.receiver }}
+        </li>
+        <li><span>联系方式：</span>{{ item.contact.replace(/^(\d{3})\d{4}(\d{4})/, '$1****$2') }}</li>
+        <li><span>收货地址：</span>{{ item.fullLocation.replace(/ /g, '') + item.address }}</li>
+      </ul>
+    </div>
+    <template #footer>
+      <XtxButton @click="dialogVisible = false" type="gray" style="margin-right: 20px">取消</XtxButton>
+      <XtxButton @click="confirmAddress()" type="primary">确认</XtxButton>
+    </template>
+  </XtxDialog>
+  <!-- 添加收货地址组件 -->
+  <AddressEdit @success="successHandler()" ref="addressEdit"></AddressEdit>
 </template>
 <script>
+import AddressEdit from './address-edit'
 import { ref } from 'vue'
+import { editAddress } from '@/api/order'
 export default {
   name: 'CheckoutAddress',
+  components: { AddressEdit },
   props: {
     list: {
       type: Array,
       default: () => []
     }
   },
-  setup(props) {
+  // 1. 在拥有根元素的组件中，触发自定义事件，有没有emits选项无所谓
+  // 2. 如果你的组件渲染的代码片段，vue3.0规范，需要在emits中申明你所触发的自定义事件
+  // 3. 提倡：你发了自定义事件，需要在emits选项申明下，代码可读性很高
+  emits: ['change'],
+  setup(props, { emit }) {
     // 显示的地址
     const showAddress = ref(null)
-    if (props.list.length) {
-      const defaultAddress = props.list.find(item => item.isDefault === 1)
+    if (props.list?.length) {
+      const defaultAddress = props.list.find(item => item.isDefault === 0)
       if (defaultAddress) {
         showAddress.value = defaultAddress
       } else {
@@ -46,11 +69,89 @@ export default {
         }
       }
     }
-    return { showAddress }
+    // 控制确认框的显示和隐藏
+    const dialogVisible = ref(false)
+    // 默认通知一个地址ID给父
+    emit('change', showAddress.value?.id)
+    // 记录选择的地址
+    const selectedAddress = ref(null)
+    // 打开对话框
+    const openDialog = () => {
+      // 显示
+      dialogVisible.value = true
+      // 清空选中
+      selectedAddress.value = null
+    }
+    // 确认地址
+    const confirmAddress = () => {
+      // 隐藏
+      dialogVisible.value = false
+      // 记录选中
+      showAddress.value = selectedAddress.value
+      const oldAddress = props.list.find(item => item?.isDefault === 0)
+      if (oldAddress) {
+        oldAddress.isDefault = 1
+        editAddress(oldAddress)
+      }
+      showAddress.value.isDefault = 0
+      editAddress(showAddress.value)
+
+      // 默认通知一个地址ID给父
+      emit('change', showAddress.value?.id)
+    }
+    // 添加收货地址组件
+    const addressEdit = ref(null)
+    const openAddressEdit = formData => {
+      // 调用组件内部暴漏的open方法
+      addressEdit.value.open(formData)
+    }
+    // 添加地址组件 - 添加成功触发的自定义事件
+    const successHandler = formData => {
+      const address = props.list.find(item => item?.id === formData?.id)
+      // 有id证明是修改地址
+      if (address) {
+        // 修改
+        for (const key in address) {
+          address[key] = formData[key]
+        }
+        showAddress.value = formData
+      } else {
+        // 需要克隆下，不然使用的是对象的引用,组件内部清空数据也会清空这里的数据
+        // props.list是复杂数据类型,所以可以修改
+        // props.list.unshift(JSON.parse(JSON.stringify(formData)))
+        const { ...newData } = formData
+        // eslint-disable-next-line vue/no-mutating-props
+        props.list.unshift(newData)
+      }
+    }
+    return { showAddress, dialogVisible, selectedAddress, openDialog, confirmAddress, addressEdit, openAddressEdit, successHandler }
   }
 }
 </script>
 <style scoped lang="less">
+.xtx-dialog {
+  .text {
+    flex: 1;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    &.item {
+      border: 1px solid #f5f5f5;
+      margin-bottom: 10px;
+      cursor: pointer;
+      &.active,
+      &:hover {
+        border-color: @xtxColor;
+        background: lighten(@xtxColor, 50%);
+      }
+      > ul {
+        padding: 10px;
+        font-size: 14px;
+        line-height: 30px;
+      }
+    }
+  }
+}
 .checkout-address {
   border: 1px solid #f5f5f5;
   display: flex;
