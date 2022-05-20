@@ -1,5 +1,6 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, RouterView } from 'vue-router'
 import store from '@/store' // js模块不用导入vuex,直接导目录默认时index.js
+import { h } from 'vue'
 const Layout = () => import(/*webpackChunkName: "Layout" */ '@/views/Layout')
 const Home = () => import(/*webpackChunkName: "Home" */ '@/views/home')
 const TopCategory = () => import(/*webpackChunkName: "TopCategory" */ '@/views/category/index')
@@ -13,6 +14,9 @@ const PayIndex = () => import(/*webpackChunkName: "PayIndex" */ '@/views/member/
 const PayResult = () => import(/*webpackChunkName: "PayResult" */ '@/views/member/pay/result')
 const MemberLayout = () => import(/*webpackChunkName: "MemberLayout" */ '@/views/member/Layout')
 const MemberHome = () => import(/*webpackChunkName: "MemberHome" */ '@/views/member/home')
+const MemberOrder = () => import(/*webpackChunkName: "MemberHome" */ '@/views/member/order')
+const MemberOrderDetail = () => import(/*webpackChunkName: "MemberOrderDetail" */ '@/views/member/order/detail')
+
 const routes = [
   {
     // 一级路由布局容器
@@ -27,7 +31,24 @@ const routes = [
       { path: 'member/checkout', component: Checkout },
       { path: 'member/pay', component: PayIndex },
       { path: 'pay/callback', component: PayResult },
-      { path: 'member', component: MemberLayout, children: [{ path: '/member', component: MemberHome }] }
+      {
+        path: 'member',
+        component: MemberLayout,
+        children: [
+          { path: '/member', component: MemberHome },
+          // { path: '/member/order', component: MemberOrder },
+          // { path: '/member/order/:id', component: MemberOrderDetail },
+          // vue3.0 模糊匹配exact-class="active"加类名需要 改成嵌套关系才能实现 <RouterView />(组件写法)
+          {
+            path: '/member/order',
+            component: { render: () => h(<RouterView />) },
+            children: [
+              { path: '', component: MemberOrder },
+              { path: ':id', component: MemberOrderDetail }
+            ]
+          }
+        ]
+      }
     ]
   },
   { path: '/login', component: Login },
