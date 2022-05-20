@@ -5,7 +5,7 @@
         <!-- template标签可以看成一个元素,但是不解析成标签 -->
         <template v-if="profile.token">
           <li>
-            <a href="javascript:;"><i class="iconfont icon-user"></i>{{ profile.account }}</a>
+            <RouterLink to="/member"><i class="iconfont icon-user"></i>{{ profile.account }}</RouterLink>
           </li>
           <li><a @click="logout" href="javascript:;">退出登录</a></li>
         </template>

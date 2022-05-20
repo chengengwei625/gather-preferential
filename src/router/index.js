@@ -8,7 +8,11 @@ const Goods = () => import(/*webpackChunkName: "Goods" */ '@/views/goods/index')
 const Login = () => import(/*webpackChunkName: "Login" */ '@/views/login/index')
 const LoginCallback = () => import(/*webpackChunkName: "LoginCallback" */ '@/views/login/callback')
 const CartPage = () => import(/*webpackChunkName: "CartPage" */ '@/views/cart/index')
-const Checkout = () => import(/*webpackChunkName: "Checkout" */ '@/views/memmber/pay/checkout')
+const Checkout = () => import(/*webpackChunkName: "Checkout" */ '@/views/member/pay/checkout')
+const PayIndex = () => import(/*webpackChunkName: "PayIndex" */ '@/views/member/pay/index')
+const PayResult = () => import(/*webpackChunkName: "PayResult" */ '@/views/member/pay/result')
+const MemberLayout = () => import(/*webpackChunkName: "MemberLayout" */ '@/views/member/Layout')
+// const MemberHome = () => import(/*webpackChunkName: "MemberHome" */ '@/views/member/home')
 const routes = [
   {
     // 一级路由布局容器
@@ -20,7 +24,10 @@ const routes = [
       { path: 'category/sub/:id', component: SubCategory },
       { path: 'product/:id', component: Goods },
       { path: 'cart', component: CartPage },
-      { path: 'member/checkout', component: Checkout }
+      { path: 'member/checkout', component: Checkout },
+      { path: 'member/pay', component: PayIndex },
+      { path: 'pay/callback', component: PayResult },
+      { path: 'member', component: MemberLayout }
     ]
   },
   { path: '/login', component: Login },
