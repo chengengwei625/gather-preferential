@@ -137,7 +137,7 @@ export default {
           })
         })
         .catch(e => {
-          console.log('点击取消')
+          // console.log('点击取消')
         })
     }
     // 批量删除
@@ -156,7 +156,7 @@ export default {
     }
     // 修改规格
     const updateCartSku = (oldSkuId, newSku) => {
-      console.log(newSku)
+      // console.log(newSku)
       store.dispatch('cart/updateCartSku', { oldSkuId, newSku })
     }
     // 跳转结算页面

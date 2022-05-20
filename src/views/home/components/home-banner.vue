@@ -28,10 +28,10 @@ export default {
 }
 // 覆盖轮播图组件样式
 .xtx-carousel {
-  :deep .carousel-btn.prev {
+  :deep(.carousel-btn.prev) {
     left: 270px;
   }
-  :deep .carousel-indicator {
+  :deep(.carousel-indicator) {
     padding-left: 250px;
   }
 }

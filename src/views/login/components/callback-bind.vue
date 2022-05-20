@@ -50,7 +50,7 @@ export default {
     const avatar = ref('null')
     if (QC.Login.check()) {
       QC.api('get_user_info').success(res => {
-        console.log(res)
+        // console.log(res)
         avatar.value = res.data.figureurl_qq
         nickname.value = res.data.nickname
       })

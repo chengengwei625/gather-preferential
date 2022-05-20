@@ -25,10 +25,10 @@ export default {
   setup(props) {
     //最终需要的数据是sliders提供给轮播图使用
     //数据结构:sliders=[[4个],[4个],[4个],[4个]]
-    console.log(props.goodsId)
+    // console.log(props.goodsId)
     const sliders = ref([])
     findRelGoods({ id: props.goodsId }).then(data => {
-      console.log(data)
+      // console.log(data)
       //data.result 商品列表,数据结构[16个]
       //将data.result数据赋值给sliders数据,保证数据结构正确
       const pageSize = 4
@@ -36,7 +36,7 @@ export default {
       for (let i = 0; i < pageCount; i++) {
         sliders.value.push(data.result.slice(pageSize * i, pageSize * (i + 1)))
       }
-      console.log(sliders)
+      // console.log(sliders)
     })
     return { sliders }
   }

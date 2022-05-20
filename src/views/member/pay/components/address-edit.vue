@@ -105,7 +105,6 @@ export default {
           // 隐藏
           dialogVisible.value = false
           // 提交表单对象给父组件
-          console.log(formData, '6666')
           emit('success', formData)
         })
       } else {

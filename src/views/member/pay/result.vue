@@ -37,7 +37,7 @@ export default {
   setup() {
     const order = ref(null)
     const route = useRoute()
-    console.log(route.query.orderId)
+    // console.log(route.query.orderId)
     findOrder(route.query.orderId).then(data => {
       order.value = data.result
     })

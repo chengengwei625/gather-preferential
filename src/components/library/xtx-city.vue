@@ -105,7 +105,7 @@ export default {
         changeResult.countyCode = item.code
         changeResult.countyName = item.name
         changeResult.fullLocation = `${changeResult.provinceName} ${changeResult.cityName} ${changeResult.countyName}`
-        console.log(changeResult.fullLocation)
+        // console.log(changeResult.fullLocation)
         close()
         emit('change', changeResult)
       }

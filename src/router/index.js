@@ -12,7 +12,7 @@ const Checkout = () => import(/*webpackChunkName: "Checkout" */ '@/views/member/
 const PayIndex = () => import(/*webpackChunkName: "PayIndex" */ '@/views/member/pay/index')
 const PayResult = () => import(/*webpackChunkName: "PayResult" */ '@/views/member/pay/result')
 const MemberLayout = () => import(/*webpackChunkName: "MemberLayout" */ '@/views/member/Layout')
-// const MemberHome = () => import(/*webpackChunkName: "MemberHome" */ '@/views/member/home')
+const MemberHome = () => import(/*webpackChunkName: "MemberHome" */ '@/views/member/home')
 const routes = [
   {
     // 一级路由布局容器
@@ -27,7 +27,7 @@ const routes = [
       { path: 'member/checkout', component: Checkout },
       { path: 'member/pay', component: PayIndex },
       { path: 'pay/callback', component: PayResult },
-      { path: 'member', component: MemberLayout }
+      { path: 'member', component: MemberLayout, children: [{ path: '/member', component: MemberHome }] }
     ]
   },
   { path: '/login', component: Login },

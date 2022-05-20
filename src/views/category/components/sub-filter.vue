@@ -52,7 +52,6 @@ export default {
                 item.selectedProp = null
                 item.properties.unshift({ id: null, name: '全部' })
               })
-              console.log(result, 111)
               filterData.value = result
               filterLoading.value = false
             })
