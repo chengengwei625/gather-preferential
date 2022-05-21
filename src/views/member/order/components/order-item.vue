@@ -1,63 +1,85 @@
 <template>
   <div class="order-item">
-    <div class="order-item">
-      <div class="head">
-        <span>下单时间：2018-01-08 15:02:00</span>
-        <span>订单编号：62205697599</span>
-        <span class="down-time">
-          <i class="iconfont icon-down-time"></i>
-          <b>付款截止：28分20秒</b>
-        </span>
+    <div class="head">
+      <span>下单时间：{{ order.createTime }}</span>
+      <span>订单编号：{{ order.id }}</span>
+      <!-- 未付款，倒计时时间还有 -->
+      <span class="down-time" v-if="order.orderState === 1 && order.countdown !== -1">
+        <i class="iconfont icon-down-time"></i>
+        <b>付款截止：{{ timeText }}</b>
+        <!-- <b v-else>订单已超时，请取消订单!</b> -->
+      </span>
+      <!-- 已完成 已取消 -->
+      <a v-if="[5, 6].includes(order.orederState) || order.countdown === -1" href="javascript:;" class="del"><b v-if="order.countdown === -1">订单已超时，请删除订单!</b> 删除</a>
+    </div>
+    <div class="body">
+      <div class="column goods">
+        <ul>
+          <li v-for="goods in order.skus" :key="goods.id">
+            <RouterLink class="image" :to="`/product/${goods.id}`">
+              <img :src="goods.image" alt="" />
+            </RouterLink>
+            <div class="info">
+              <p class="name ellipsis-2">{{ goods.name }}</p>
+              <p class="attr ellipsis">{{ goods.attrsText }}</p>
+            </div>
+            <div class="price">¥{{ goods.realPay }}</div>
+            <div class="count">x{{ goods.quantity }}</div>
+          </li>
+        </ul>
       </div>
-      <div class="body">
-        <div class="column goods">
-          <ul>
-            <li v-for="i in 2" :key="i">
-              <a class="image" href="javascript:;">
-                <img src="https://yanxuan-item.nosdn.127.net/f7a4f643e245d03771d6f12c94e71214.png" alt="" />
-              </a>
-              <div class="info">
-                <p class="name ellipsis-2">原创设计一体化机身,精致迷你破壁机350mL</p>
-                <p class="attr ellipsis">
-                  <span>颜色：绿色</span>
-                  <span>尺寸：10寸</span>
-                </p>
-              </div>
-              <div class="price">¥9.50</div>
-              <div class="count">x1</div>
-            </li>
-          </ul>
-        </div>
-        <div class="column state">
-          <p>待付款</p>
-        </div>
-        <div class="column amount">
-          <p class="red">¥19.00</p>
-          <p>（含运费：¥10.00）</p>
-          <p>在线支付</p>
-        </div>
-        <div class="column action">
-          <XtxButton type="primary" size="small">立即付款</XtxButton>
-          <p><a href="javascript:;">查看详情</a></p>
-          <p><a href="javascript:;">取消订单</a></p>
-        </div>
+      <div class="column state">
+        <p>{{ orderStatus[order.orderState].label }}</p>
+        <!-- 待收货：查看物流 -->
+        <!-- 待评价：评价商品 -->
+        <!-- 已完成：查看评价 -->
+        <p v-if="order.orderState === 3"><a href="javascript:;" class="green">查看物流</a></p>
+        <p v-if="order.orderState === 4"><a href="javascript:;" class="green">评价商品</a></p>
+        <p v-if="order.orderState === 5"><a href="javascript:;" class="green">查看评价</a></p>
+      </div>
+      <div class="column amount">
+        <p class="red">¥{{ order.payMoney }}</p>
+        <p>（含运费：¥{{ order.postFee }}）</p>
+        <p>在线支付</p>
+      </div>
+      <div class="column action">
+        <!-- 1 待支付：查看详情，立即付款，取消订单 -->
+        <!-- 2 待发货：查看详情，再次购买 -->
+        <!-- 3 待收货：查看详情，再次购买，确认收货 -->
+        <!-- 4 待评价：查看详情，再次购买，申请售后 -->
+        <!-- 5 已完成：查看详情，再次购买，申请售后 -->
+        <!-- 6 已取消：查看详情 -->
+        <XtxButton @click="$router.push(`/member/pay?orderId=${order.id}`)" v-if="order.orderState === 1 && order.countdown !== -1" type="primary" size="small">立即付款</XtxButton>
+        <XtxButton v-if="order.orderState === 3" type="primary" size="small">确认收货</XtxButton>
+        <p><a href="javascript:;">查看详情</a></p>
+        <p v-if="order.orderState === 1"><a href="javascript:;">取消订单</a></p>
+        <p v-if="[2, 3, 4, 5].includes(order.orderState)"><a href="javascript:;">再次购买</a></p>
+        <p v-if="[4, 5].includes(order.orderState)"><a href="javascript:;">申请售后</a></p>
       </div>
     </div>
   </div>
 </template>
-
 <script>
+import { orderStatus } from '@/api/constants'
+import { usePayTime } from '@/hooks'
 export default {
-  name: '',
-  setup() {
-    return {}
+  name: 'OrderItem',
+  props: {
+    order: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+  setup(props) {
+    const { start, timeText } = usePayTime()
+    start(props.order.countdown)
+    return { orderStatus, timeText }
   }
 }
 </script>
-
-<style lang="less" scoped>
+<style scoped lang="less">
 .order-item {
-  // margin-bottom: 20px;
+  margin-bottom: 20px;
   border: 1px solid #f5f5f5;
   .head {
     height: 50px;
@@ -84,6 +106,11 @@ export default {
       margin-right: 0;
       float: right;
       color: #999;
+      b {
+        vertical-align: middle;
+        font-weight: normal;
+        padding-right: 250px;
+      }
     }
   }
   .body {
