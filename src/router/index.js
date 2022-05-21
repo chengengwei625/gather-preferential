@@ -32,7 +32,7 @@ const routes = [
       { path: 'member/pay', component: PayIndex },
       { path: 'pay/callback', component: PayResult },
       {
-        path: 'member',
+        path: '/member',
         component: MemberLayout,
         children: [
           { path: '/member', component: MemberHome },

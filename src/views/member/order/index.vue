@@ -6,14 +6,16 @@
     </XtxTabs>
     <!-- 订单列表 -->
     <div class="order-list">
+      <div v-if="loading" class="loading"></div>
+      <div v-if="!loading && orderList.length === 0" class="none">暂无数据</div>
       <OrderItem v-for="item in orderList" :key="item.id" :order="item"></OrderItem>
     </div>
     <!-- 分页组件 -->
-    <XtxPagination></XtxPagination>
+    <XtxPagination v-if="total > requestParams.pageSize" @current-change="requestParams.page = $event" :total="total" :page-size="requestParams.pageSize" :current-page="requestParams.page"></XtxPagination>
   </div>
 </template>
 <script>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { orderStatus } from '@/api/constants'
 import { findOrderList } from '@/api/order'
 import OrderItem from '@/views/member/order/components/order-item'
@@ -21,10 +23,8 @@ export default {
   name: 'MemberOrder',
   components: { OrderItem },
   setup() {
+    // 默认激活tab按钮
     const activeName = ref('all')
-    const changeTab = tab => {
-      console.log(tab)
-    }
     // 请求订单参数
     const requestParams = reactive({
       page: 1,
@@ -37,7 +37,28 @@ export default {
     findOrderList(requestParams).then(data => {
       orderList.value = data.result.items
     })
-    return { activeName, changeTab, orderStatus, orderList }
+    // tab点击事件
+    const changeTab = tab => {
+      // 此时：tab.index 就是订单的状态
+      requestParams.orderState = tab.index
+      requestParams.page = 1
+    }
+    const loading = ref(true)
+    const total = ref(0)
+    // 监听请求参数改变重新发请求
+    watch(
+      requestParams,
+      () => {
+        loading.value = true
+        findOrderList(requestParams).then(data => {
+          orderList.value = data.result.items
+          total.value = data.result.counts
+          loading.value = false
+        })
+      },
+      { immediate: true }
+    )
+    return { activeName, changeTab, orderStatus, orderList, requestParams, loading, total }
   }
 }
 </script>
@@ -49,5 +70,22 @@ export default {
 .order-list {
   background: #fff;
   padding: 20px;
+  position: relative;
+  min-height: 400px;
+}
+.loading {
+  height: 100%;
+  width: 100%;
+  min-height: 400px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: rgba(255, 255, 255, 0.9) url(../../../assets/images/loading.gif) no-repeat center;
+}
+.none {
+  height: 400px;
+  text-align: center;
+  line-height: 400px;
+  color: #999;
 }
 </style>

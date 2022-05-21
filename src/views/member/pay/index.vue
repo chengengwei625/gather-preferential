@@ -28,7 +28,7 @@
         <div class="item">
           <p>支付平台</p>
           <a class="btn wx" href="javascript:;"></a>
-          <a class="btn alipay" @click="visibleDialog = true" :href="payUrl" target="_blank"></a>
+          <a class="btn alipay" @click="visibleDialog = true" :href="payUrl" target="_blank" title="支付宝"></a>
         </div>
         <div class="item">
           <p>支付方式</p>
