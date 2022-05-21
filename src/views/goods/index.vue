@@ -65,6 +65,7 @@ export default {
   name: 'XtxGoodsPage',
   components: { GoodsRelevant, GoodsImage, GoodsSales, GoodName, GoodsSku, GoodsTabs, GoodsHot, GoodsWarn },
   setup() {
+    // 获取商品详情
     const goods = useGoods()
     // sku改变时价格，优惠价格，库存也要更新
     const changeSku = sku => {

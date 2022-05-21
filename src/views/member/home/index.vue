@@ -1,5 +1,4 @@
 <template>
-  <div class="member-home">个人中心</div>
   <!-- 概览 -->
   <HomeOverview />
   <!-- 收藏 -->
