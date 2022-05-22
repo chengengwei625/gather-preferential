@@ -10,7 +10,7 @@
         <!-- <b v-else>订单已超时，请取消订单!</b> -->
       </span>
       <!-- 已完成 已取消 -->
-      <a @click="$emit('on-delete-order')" v-if="[5, 6].includes(order.orederState) || order.countdown === -1" href="javascript:;" class="del"><b v-if="order.countdown === -1">订单已超时，请删除订单!</b> 删除</a>
+      <a @click="$emit('on-delete-order', order)" v-if="[5, 6].includes(order.orederState) || order.countdown === -1" href="javascript:;" class="del"><b v-if="order.countdown === -1">订单已超时，请删除订单!</b> 删除</a>
     </div>
     <div class="body">
       <div class="column goods">

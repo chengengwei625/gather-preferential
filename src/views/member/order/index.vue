@@ -8,7 +8,7 @@
     <div class="order-list">
       <div v-if="loading" class="loading"></div>
       <div v-if="!loading && orderList.length === 0" class="none">暂无数据</div>
-      <OrderItem @on-cancel-order="onCancelOrder" v-for="item in orderList" :key="item.id" :order="item"></OrderItem>
+      <OrderItem @on-delete-order="onDeleteOrder" @on-cancel-order="onCancelOrder" v-for="item in orderList" :key="item.id" :order="item"></OrderItem>
     </div>
     <!-- 分页组件 -->
     <XtxPagination v-if="total > requestParams.pageSize" @current-change="requestParams.page = $event" :total="total" :page-size="requestParams.pageSize" :current-page="requestParams.page"></XtxPagination>
@@ -19,9 +19,11 @@
 <script>
 import { ref, reactive, watch } from 'vue'
 import { orderStatus } from '@/api/constants'
-import { findOrderList } from '@/api/order'
+import { findOrderList, delteOrder } from '@/api/order'
 import OrderItem from '@/views/member/order/components/order-item'
 import OrderCancel from '@/views/member/order/components/order-cancel'
+import Confirm from '@/components/library/Confirm'
+import Message from '@/components/library/Message'
 export default {
   name: 'MemberOrder',
   components: { OrderItem, OrderCancel },
@@ -46,22 +48,41 @@ export default {
       requestParams.orderState = tab.index
       requestParams.page = 1
     }
-    const loading = ref(true)
-    const total = ref(0)
+
+    const loading = ref(true) // 是否显示加载动图
+    const total = ref(0) // 订单总数
+
+    // 获取订单列表(必须放watch前面,因为watch第一次就调用)
+    const findOrderListFn = () => {
+      loading.value = true
+      findOrderList(requestParams).then(data => {
+        orderList.value = data.result.items
+        total.value = data.result.counts
+        loading.value = false
+      })
+    }
+
     // 监听请求参数改变重新发请求
     watch(
       requestParams,
       () => {
-        loading.value = true
-        findOrderList(requestParams).then(data => {
-          orderList.value = data.result.items
-          total.value = data.result.counts
-          loading.value = false
-        })
+        findOrderListFn()
       },
       { immediate: true }
     )
-    return { activeName, changeTab, orderStatus, orderList, requestParams, loading, total, ...useCancelOrder() }
+
+    // 删除订单
+    const onDeleteOrder = item => {
+      Confirm({ text: '您确认删除该条订单吗？' })
+        .then(() => {
+          delteOrder([item.id]).then(() => {
+            Message({ text: '删除订单成功', type: 'success' })
+            findOrderListFn()
+          })
+        })
+        .catch(e => {})
+    }
+    return { activeName, changeTab, orderStatus, orderList, requestParams, loading, total, ...useCancelOrder(), onDeleteOrder }
   }
 }
 // 封装逻辑-取消订单
