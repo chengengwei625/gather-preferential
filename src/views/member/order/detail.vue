@@ -1,14 +1,32 @@
 <template>
-  <div class="member-detail">MemberDetail</div>
+  <div class="order-detail-page" v-if="order">
+    <!-- 操作栏 -->
+    <DetailAction :order="order" />
+    <!-- 步骤条 组件xtx-steps.vue-->
+    <!-- 物流栏 -->
+    <!-- 订单商品信息 -->
+  </div>
 </template>
-
 <script>
+import { ref } from 'vue'
+import { findOrder } from '@/api/order'
+import { useRoute } from 'vue-router'
+import DetailAction from './components/detail-action'
 export default {
-  name: 'MemberDetail',
+  name: 'OrderDetailPage',
+  components: { DetailAction },
   setup() {
-    return {}
+    const order = ref(null)
+    const route = useRoute()
+    findOrder(route.params.id).then(data => {
+      order.value = data.result
+    })
+    return { order }
   }
 }
 </script>
-
-<style lang="less" scoped></style>
+<style scoped lang="less">
+.order-detail-page {
+  background: #fff;
+}
+</style>
