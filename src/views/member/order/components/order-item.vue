@@ -16,7 +16,7 @@
       <div class="column goods">
         <ul>
           <li v-for="goods in order.skus" :key="goods.id">
-            <RouterLink class="image" :to="`/product/${goods.id}`">
+            <RouterLink class="image" :to="`/product/${goods.spuId}`">
               <img :src="goods.image" alt="" />
             </RouterLink>
             <div class="info">
@@ -33,7 +33,7 @@
         <!-- 待收货：查看物流 -->
         <!-- 待评价：评价商品 -->
         <!-- 已完成：查看评价 -->
-        <p v-if="order.orderState === 3"><a href="javascript:;" class="green">查看物流</a></p>
+        <p @click="$emit('on-logistics', order)" v-if="order.orderState === 3"><a href="javascript:;" class="green">查看物流</a></p>
         <p v-if="order.orderState === 4"><a href="javascript:;" class="green">评价商品</a></p>
         <p v-if="order.orderState === 5"><a href="javascript:;" class="green">查看评价</a></p>
       </div>
@@ -50,7 +50,7 @@
         <!-- 5 已完成：查看详情，再次购买，申请售后 -->
         <!-- 6 已取消：查看详情 -->
         <XtxButton @click="$router.push(`/member/pay?orderId=${order.id}`)" v-if="order.orderState === 1 && order.countdown !== -1" type="primary" size="small">立即付款</XtxButton>
-        <XtxButton v-if="order.orderState === 3" type="primary" size="small">确认收货</XtxButton>
+        <XtxButton @click="$emit('on-confirm-order', order)" v-if="order.orderState === 3" type="primary" size="small">确认收货</XtxButton>
         <p><a @click="$router.push(`/member/order/${order.id}`)" href="javascript:;">查看详情</a></p>
         <p @click="$emit('on-cancel-order', order)" v-if="order.orderState === 1"><a href="javascript:;">取消订单</a></p>
         <p v-if="[2, 3, 4, 5].includes(order.orderState)"><a href="javascript:;">再次购买</a></p>
@@ -65,7 +65,7 @@ import { usePayTime } from '@/hooks'
 export default {
   name: 'OrderItem',
   // 组件本身触发的自定义事件可以在这里申明
-  emits: ['on-cancel-order', 'on-delete-order'],
+  emits: ['on-cancel-order', 'on-delete-order', 'on-confirm-order', 'on-logistics'],
   props: {
     order: {
       type: Object,
