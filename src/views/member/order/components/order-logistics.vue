@@ -5,13 +5,13 @@
         <img :src="logistics.picture" alt="" />
         <p>{{ logistics.count }}件商品</p>
       </a>
-      <div class="info" v-if="logistics.company">
+      <div class="info" v-if="logistics">
         <p><span>配送企业：</span>{{ logistics.company.name }}</p>
         <p><span>快递单号：</span>{{ logistics.company.number }}</p>
         <p><span>联系电话：</span>{{ logistics.company.tel }}</p>
       </div>
     </div>
-    <div class="order-logistics-list" v-if="logistics.list">
+    <div class="order-logistics-list" v-if="logistics">
       <div class="item" v-for="(item, i) in logistics.list" :key="item.id">
         <div class="line" :class="{ active: i === 0 }"></div>
         <div class="logistics">
