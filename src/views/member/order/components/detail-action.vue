@@ -12,7 +12,7 @@
       <!-- 待付款 -->
       <template v-if="order.orderState === 1">
         <XtxButton @click="$router.push('/member/pay?id=' + order.id)" type="primary" size="small">立即付款</XtxButton>
-        <XtxButton type="gray" size="small">取消订单</XtxButton>
+        <XtxButton @click="onCancelOrder(order)" type="gray" size="small">取消订单</XtxButton>
       </template>
       <!-- 待发货 -->
       <template v-if="order.orderState === 2">
@@ -35,14 +35,19 @@
         <XtxButton type="plain" size="small">查看评价</XtxButton>
         <XtxButton type="gray" size="small">申请售后</XtxButton>
       </template>
-      <!-- 已取消 -->
+      <!-- 已取消(没有按钮) -->
     </div>
+    <!-- 参看物流 -->
+    <OrderCancel ref="orderCancelCom"></OrderCancel>
   </div>
 </template>
 <script>
+import OrderCancel from '@/views/member/order/components/order-cancel' // 订单取消
 import { orderStatus } from '@/api/constants'
+import { useCancelOrder } from '../index'
 export default {
   name: 'OrderDetailAction',
+  components: { OrderCancel },
   props: {
     order: {
       type: Object,
@@ -50,7 +55,7 @@ export default {
     }
   },
   setup() {
-    return { orderStatus }
+    return { orderStatus, ...useCancelOrder() }
   }
 }
 </script>

@@ -4,6 +4,7 @@ import XtxConfirm from './xtx-confirm'
 // 准备div
 const div = document.createElement('div')
 div.setAttribute('class', 'xtx-confirm-container')
+div.setAttribute('id', 'dailog')
 document.body.appendChild(div)
 
 // 该函数渲染XtxConfirm组件，标题和文本

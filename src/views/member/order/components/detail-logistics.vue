@@ -7,7 +7,9 @@
     <a href="javascript:;" @click="onLogisticsOrder(order)">查看物流</a>
   </div>
   <!-- 参看物流 -->
-  <OrderLogistics ref="logisticsOrderCom"></OrderLogistics>
+  <Teleport to="#dailog">
+    <OrderLogistics ref="logisticsOrderCom"></OrderLogistics>
+  </Teleport>
 </template>
 <script>
 import { ref } from 'vue'
