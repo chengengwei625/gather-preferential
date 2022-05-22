@@ -8,10 +8,12 @@
     <div class="order-list">
       <div v-if="loading" class="loading"></div>
       <div v-if="!loading && orderList.length === 0" class="none">暂无数据</div>
-      <OrderItem v-for="item in orderList" :key="item.id" :order="item"></OrderItem>
+      <OrderItem @on-cancel-order="onCancelOrder" v-for="item in orderList" :key="item.id" :order="item"></OrderItem>
     </div>
     <!-- 分页组件 -->
     <XtxPagination v-if="total > requestParams.pageSize" @current-change="requestParams.page = $event" :total="total" :page-size="requestParams.pageSize" :current-page="requestParams.page"></XtxPagination>
+    <!-- 取消订单原因组件 -->
+    <OrderCancel ref="orderCancelCom"></OrderCancel>
   </div>
 </template>
 <script>
@@ -19,9 +21,10 @@ import { ref, reactive, watch } from 'vue'
 import { orderStatus } from '@/api/constants'
 import { findOrderList } from '@/api/order'
 import OrderItem from '@/views/member/order/components/order-item'
+import OrderCancel from '@/views/member/order/components/order-cancel'
 export default {
   name: 'MemberOrder',
-  components: { OrderItem },
+  components: { OrderItem, OrderCancel },
   setup() {
     // 默认激活tab按钮
     const activeName = ref('all')
@@ -58,25 +61,35 @@ export default {
       },
       { immediate: true }
     )
-    return { activeName, changeTab, orderStatus, orderList, requestParams, loading, total }
+    return { activeName, changeTab, orderStatus, orderList, requestParams, loading, total, ...useCancelOrder() }
   }
+}
+// 封装逻辑-取消订单
+const useCancelOrder = () => {
+  const orderCancelCom = ref(null)
+  const onCancelOrder = item => {
+    // item 就是你要取消的订单
+    console.log(item, 'item')
+    orderCancelCom.value.open(item)
+  }
+  return { onCancelOrder, orderCancelCom }
 }
 </script>
 <style scoped lang="less">
 .member-order {
   height: 100%;
+  min-height: 400px;
   background: #fff;
 }
 .order-list {
   background: #fff;
   padding: 20px;
   position: relative;
-  min-height: 400px;
 }
 .loading {
+  min-height: 400px;
   height: 100%;
   width: 100%;
-  min-height: 400px;
   position: absolute;
   left: 0;
   top: 0;

@@ -10,7 +10,7 @@
         <!-- <b v-else>订单已超时，请取消订单!</b> -->
       </span>
       <!-- 已完成 已取消 -->
-      <a v-if="[5, 6].includes(order.orederState) || order.countdown === -1" href="javascript:;" class="del"><b v-if="order.countdown === -1">订单已超时，请删除订单!</b> 删除</a>
+      <a @click="$emit('on-delete-order')" v-if="[5, 6].includes(order.orederState) || order.countdown === -1" href="javascript:;" class="del"><b v-if="order.countdown === -1">订单已超时，请删除订单!</b> 删除</a>
     </div>
     <div class="body">
       <div class="column goods">
@@ -51,8 +51,8 @@
         <!-- 6 已取消：查看详情 -->
         <XtxButton @click="$router.push(`/member/pay?orderId=${order.id}`)" v-if="order.orderState === 1 && order.countdown !== -1" type="primary" size="small">立即付款</XtxButton>
         <XtxButton v-if="order.orderState === 3" type="primary" size="small">确认收货</XtxButton>
-        <p><a href="javascript:;">查看详情</a></p>
-        <p v-if="order.orderState === 1"><a href="javascript:;">取消订单</a></p>
+        <p><a @click="$router.push(`/member/order/${order.id}`)" href="javascript:;">查看详情</a></p>
+        <p @click="$emit('on-cancel-order', order)" v-if="order.orderState === 1"><a href="javascript:;">取消订单</a></p>
         <p v-if="[2, 3, 4, 5].includes(order.orderState)"><a href="javascript:;">再次购买</a></p>
         <p v-if="[4, 5].includes(order.orderState)"><a href="javascript:;">申请售后</a></p>
       </div>
@@ -64,6 +64,8 @@ import { orderStatus } from '@/api/constants'
 import { usePayTime } from '@/hooks'
 export default {
   name: 'OrderItem',
+  // 组件本身触发的自定义事件可以在这里申明
+  emits: ['on-cancel-order', 'on-delete-order'],
   props: {
     order: {
       type: Object,
