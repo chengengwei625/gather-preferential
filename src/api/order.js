@@ -1,10 +1,18 @@
 import request from '@/utils/request'
 
 /**
- * 获取结算信息(生成订单)
+ * 获取结算信息(根据购物车生成订单)
  */
 export const findCheckoutInfo = () => {
   return request('/member/order/pre', 'get')
+}
+/**
+ * 获取的订单结算信息(再次购买)
+ * @param {String} id - 订单ID
+ * @returns
+ */
+export const findOrderRepurchase = id => {
+  return request(`/member/order/repurchase/${id}`, 'get')
 }
 /**
  * 添加收货地址信息
