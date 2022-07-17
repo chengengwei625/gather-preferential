@@ -1,4 +1,4 @@
-# rabbit-fresh
+# gather-preferential
 
 ## Project setup
 ```
